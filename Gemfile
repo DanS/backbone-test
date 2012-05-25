@@ -8,6 +8,7 @@ gem 'jquery-rails'
 group :test, :development do
   gem "rspec-rails"
   gem "guard-livereload"
+  gem "guard-jasmine"
   gem "jasmine-rails"
   gem "jasminerice"
 end
