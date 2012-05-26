@@ -45,3 +45,39 @@ describe "todos", ->
       expect(@.todos.at(0)).toBe(@.todo3)
       expect(@.todos.at(1)).toBe(@.todo2)
       expect(@.todos.at(2)).toBe(@.todo1)
+
+  describe "server interactions", ->
+
+#      loadFixtures('Todos')
+#      @.fixture = {
+#              status: "OK"
+#              version: "1.0"
+#              response:
+#                todos: [
+#                  id: 1
+#                  title: "Destroy Alderaan"
+#                  priority: 1
+#                  done: true
+#                ]
+#            }
+    beforeEach ->
+      @.fixture = this.fixtures.Todos.valid
+      @.fixtureTodos = @.fixture.response.todos
+      @.server = sinon.fakeServer.create()
+      @.todos = new Railstart.Collections.Todos()
+      @.server.respondWith('GET', '/todos', @.validResponse(@.fixture))
+
+    afterEach ->
+      @.server.restore()
+
+    it "should make the correct request", ->
+      @.todos.fetch()
+      expect(@.server.requests.length).toEqual(1)
+      expect(@.server.requests[0].method).toEqual("GET")
+      expect(@.server.requests[0].url).toEqual("/todos")
+
+    it "should parse todos from the response", ->
+      @.todos.fetch()
+      @.server.respond()
+      expect(@.todos.length).toEqual(@.fixture.response.todos.length)
+      expect(@.todos.get(1).get('title')).toEqual(@.fixture.response.todos[0].title)
